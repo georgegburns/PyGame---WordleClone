@@ -20,9 +20,8 @@ ALPHABET = list(string.ascii_lowercase) + list(string.ascii_uppercase)
 VOWELS = [['A','E','I','O','U']]
 CONSONENTS = [letter for letter in list(string.ascii_uppercase) if letter not in VOWELS[0]]
 CONSONENTS_CHUNKS = [CONSONENTS[x:x+6] for x in range(0, len(CONSONENTS), 6)]
-print(CONSONENTS_CHUNKS)
 INDEX = random.randint(0, len(WORDS)-1)
-GOAL = WORDS[INDEX]
+GOAL = 'BEEPS'
 GUESSES = []
 DELAY = 0.2
 LEFT = 0.5
@@ -33,6 +32,7 @@ WORDSIZE = 5
 COLOUR = 'White'
 STATE = None
 HISCORE = 0
+print(GOAL)
 
 class inputSquare():
     
@@ -135,11 +135,11 @@ def buildAlphabet(SIZE, VOWELS, CONSONENTS_CHUNKS,  screen, x, y):
 
 def colourSelect(COLOUR, EXACTS, GUESSES, GUESSCOUNT, STATE, i, j):
     GOALCOUNT = GOAL.count(GUESSES[i][j])
-    VALUE = EXACTS.get(j)
+    VALUE = EXACTS.get(j)  
     if VALUE != None:
-        COLOUR = 'darkseagreen1'
-    elif GUESSCOUNT < GOALCOUNT:
-        GUESSCOUNT += 1
+        COLOUR = 'darkseagreen1' 
+    elif GUESSCOUNT[GUESSES[i][j]] < GOALCOUNT:
+        GUESSCOUNT[GUESSES[i][j]] += 1
         COLOUR = 'gold'
     else:
         COLOUR = 'tomato'
@@ -148,6 +148,7 @@ def colourSelect(COLOUR, EXACTS, GUESSES, GUESSCOUNT, STATE, i, j):
 def stringMatch(GUESSES, i):
     RESULT = []
     EXACTS = {}
+    GUESSCOUNT = {}
     for index, letter in enumerate(GUESSES[i]):
             if letter == GOAL[index]:
                 RESULT.append(True)
@@ -156,14 +157,15 @@ def stringMatch(GUESSES, i):
     for index, state in enumerate(RESULT):
         if state:
             EXACTS[index] = GUESSES[i][index]
-    return EXACTS
+    for index, letter in enumerate(GUESSES[i]):
+        GUESSCOUNT[letter] = sum(1 for value in EXACTS.values() if value == letter)
+    return EXACTS, GUESSCOUNT
 
 def buildSquares(LIMIT, WORDSIZE, COLOUR, STATE, screen, x, y):
     for i in range(LIMIT):
+        if len(GUESSES) > 0 and len(GUESSES) > i:
+            EXACTS, GUESSCOUNT = stringMatch(GUESSES, i)
         for j in range(WORDSIZE):
-            if len(GUESSES) > 0 and len(GUESSES) > i:
-                EXACTS = stringMatch(GUESSES, i)
-                GUESSCOUNT = sum(1 for value in EXACTS.values() if value == GUESSES[i][j])
             try: 
                 COLOUR, STATE = colourSelect(COLOUR, EXACTS, GUESSES, GUESSCOUNT, STATE, i, j)
                 letter = inputLetter(GUESSES, i, j, 'black').letter
