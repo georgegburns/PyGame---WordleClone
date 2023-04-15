@@ -1,12 +1,11 @@
-import requests as res
-import bs4 as bs
 
-URL =  "https://www.wordmom.com/5-letter-birds"
-PAGE = res.get(URL)
-HTML = PAGE.content
-SOUP = bs.BeautifulSoup(HTML, 'html.parser')
-WORDS = [word.text.upper() for word in SOUP.find_all('li') if len(word.text.strip()) == 5]
-print(WORDS)
+f = open('5letterwords.txt', 'r')
+WORDS = []
+CONTENT = f.readlines()
+for word in CONTENT:
+    word = word.strip('\n')
+    word = word.upper()
+    WORDS.append(word)
 
 def checkWord(word : str):
     if word in WORDS:
